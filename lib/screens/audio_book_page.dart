@@ -23,16 +23,23 @@ class _AudioBookPageState extends State<AudioBookPage> {
     fetchBook();
   }
 
-  String _baseUrl = 'https://musical-happiness.onrender.com/book';
+  String _baseUrl = 'https://musical-happiness.onrender.com';
 
   Future<Book?> fetchBook({http.Client? client}) async {
     client ??= http.Client();
     final response = await client.get(Uri.parse('$_baseUrl/book'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      setState(() {
+        _loading = false;
+        _book = Book.fromJson(data);
+      });
       return Book.fromJson(data);
     } else {
-      return null;
+      setState(() {
+        _loading = false;
+      });
+      throw Exception('Failed to load book');
     }
   }
 
